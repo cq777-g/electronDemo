@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="./css/basic.css" />
+    <title>服务器信息列表</title>
+</head>
+
+<body>
+    <!--标题面板-->
+    <nav>
+        <div class="nav-wrapper">
+            <span class="brand-logo">服务器信息列表</a>
+        </div>
+    </nav>
+    <!--信息列表-->
+    <ul class="collection" id="wrap">
+        <li class="collection-item" style="display: flex">
+            <span class="name-span">服务器名称</span>
+            <span class="ip-span">服务器IP</span>
+        </li>
+    </ul>
+    <!--提示-->
+    <h3 class="space-section">暂无信息，请添加</h3>
+    <style type="text/css">
+        .space-section {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            height: 100px;
+            line-height: 100px;
+        }
+
+        ul li {
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            margin-left: 2%;
+            width: 8%;
+            height: 30px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 25px;
+            right: 10px;
+            color: #ccc;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .name-span {
+            margin-left: 5%;
+            width: 40%;
+        }
+
+        .ip-span {
+            margin-left: 5%;
+            width: 40%;
+        }
+    </style>
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+        const ul = document.querySelector('#wrap');
+        const spaceSelection = document.querySelector('.space-section');
+        // 主窗口接收 新增信息窗口传递过来的数据
+        ipcRenderer.on('info:add', (e, value) => {
+            const { name, ip } = value;
+            const li = document.createElement('li');
+            li.className = "collection-item";
+            li.style = "display: flex";
+            li.innerHTML = ' <span class="name-span">' +
+                name + '</span>' + ' <span class="ip-span">' +
+                ip + '</span>' + ' <i class="close-btn">X</i>';
+            ul.append(li);
+            spaceSelection.style.display = 'none';
+            domListener();
+        });
+
+        // 接收 清空信息的按钮事件传递
+        ipcRenderer.on('info:clear', (e) => {
+            ul.innerHTML =
+                '<li class="collection-item" style="display: flex">' +
+                '<span class="name-span">服务器名称</span>' +
+                '<span class="ip-span">服务器IP</span></li>';
+            spaceSelection.style.display = 'block';
+        })
+
+        // dom监听
+        function domListener() {
+            document.querySelectorAll('.close-btn').forEach(el => {
+                el.addEventListener('click', function () {
+                    // 不能使用箭头函数，箭头函数中this没有指向
+                    this.parentNode.remove();
+
+                    // 判断列表是否为空
+                    if (ul.children.length == 1) {
+                        ul.className = '';
+                        spaceSelection.style.display = 'block';
+                    }
+                })
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="./css/basic.css" />
+    <title>新增信息</title>
+</head>
+
+<body>
+    <section class="form-box">
+        <form>
+            <label for="name">请输入服务器名称</label>
+            <input type="text" name="name" id="name" placeholder="名称" autofocus />
+            <label for="ip">请输入服务器地址</label>
+            <input type="text" name="ip" id="ip" placeholder="地址" />
+            <button type="submit" class="btn btn-add">添加</button>
+        </form>
+    </section>
+    <style type="text/css">
+        .form-box {
+            width: 80%;
+            margin: 5px auto
+        }
+
+        .btn-add {
+            width: 100%;
+            margin-top: 2px
+        }
+    </style>
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+        const form = document.querySelector('form')
+
+        // submit 事件
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.querySelector('#name').value;
+            const ip = document.querySelector('#ip').value;
+            // 发送传递信息
+            ipcRenderer.send('info:add', { name, ip })
+        })
+    </script>
+</body>
+
+</html>
